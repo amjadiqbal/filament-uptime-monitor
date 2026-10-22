@@ -34,7 +34,8 @@ adds the screen for it:
 - **Add and edit**: URL, uptime and certificate checks, interval, HTTP method, text to look for, request body and
   extra headers. Changing the URL resets the old status.
 - **Check now**: run the uptime and certificate checks for one monitor, or for a selection, with the package's own code
-  and config. You see the result straight away.
+  and config. You see the result straight away. Each user may check up to 30 monitors a minute (every monitor in a
+  bulk check counts), and a bulk check over 20 monitors is refused as a whole; both limits are configurable.
 - **Turn on and off**, one at a time or in bulk, using the package's `enable()` and `disable()`.
 - **Dashboard widget**: up, down, certificate problems, and the time of the last check, with a hint when the scheduler
   seems to have stopped.
@@ -48,13 +49,14 @@ change how the scheduled checks or notifications work.
 - PHP 8.2+ (with Filament 5, tested on PHP 8.3+)
 - Laravel 12 or 13
 - Filament 4 or 5
-- spatie/laravel-uptime-monitor 4.6+
+- spatie/laravel-uptime-monitor 4.7+
 
 ## Installation
 
-> **Laravel 13: add `-W`.** A new Laravel 13 app ships Guzzle 8, but spatie/laravel-uptime-monitor (4.7.1) needs
-> Guzzle 7. A plain `composer require amjadiqbal/filament-uptime-monitor` stops with "guzzlehttp/guzzle ... is fixed
-> to 8.3.0 (lock file version)" and changes nothing. With `-W`, Composer moves Guzzle back to 7.16.0 (psr7 2.13.2,
+> **Laravel 13: add `-W`.** A new Laravel 13 app ships Guzzle 8, but spatie/laravel-uptime-monitor needs Guzzle 7
+> (4.7.0 and 4.7.1, the versions this plugin supports, require `^7.4|^7.2`). A plain
+> `composer require amjadiqbal/filament-uptime-monitor` stops with "guzzlehttp/guzzle ... is fixed to 8.3.0 (lock file
+> version)" and changes nothing. With `-W`, Composer moves Guzzle back to 7.16.0 (psr7 2.13.2,
 > promises 2.6.0), which Laravel 13 supports. Tested 2026-10-23 on a new Laravel 13.38.0 + Filament 5.10.3 app: the
 > install succeeded, the app's own tests passed, and Laravel's HTTP client and the `monitor:*` commands worked.
 > There is no open upstream issue or PR for Guzzle 8 yet ([#383](https://github.com/spatie/laravel-uptime-monitor/pull/383),
@@ -111,8 +113,8 @@ UptimeMonitorPlugin::make()
     ->navigationBadge(false)                // hide the "needs attention" count
     ->dashboardWidget(false)                // leave the widget off the dashboard
     ->listWidget(false)                     // and off the monitors page
-    ->maxChecksPerRequest(20)               // most monitors one bulk "Check now" may check (default 20)
-    ->checksPerMinute(30)                   // hand-run checks per user per minute (default 30)
+    ->maxChecksPerRequest(20)               // a bulk "Check now" over this many monitors is refused (default 20)
+    ->checksPerMinute(30)                   // monitors one user may check by hand per minute (default 30)
     ->responseCheckers([                    // let users pick a response checker per monitor
         \App\Uptime\JsonHealthChecker::class => 'JSON health endpoint',
     ])
@@ -158,9 +160,20 @@ monitors. Restrict the page with a policy or `authorizeUsing()` there.
 ## Private addresses
 
 "Check now" makes your server send a request to the monitor's URL. So that a panel user can't use it to reach internal
-services, the plugin refuses URLs on `localhost` or on private, loopback, link-local and other reserved addresses, both
-when a monitor is saved and right before it is checked by hand. Checks started from the panel also refuse redirects to
-such addresses.
+services, the plugin refuses URLs on `localhost` or on private, loopback, link-local and other reserved addresses:
+
+- **When a monitor is saved**, the host is looked up and refused if any of its addresses is private. A host that does
+  not resolve yet is accepted, because its DNS may simply not be live.
+- **Right before a check started from the panel**, the host is looked up again. A private address is skipped, and a host
+  that does not resolve is marked down ("Could not resolve host"). The request is then pinned to the address that was
+  checked (curl's `CURLOPT_RESOLVE`), so DNS can't switch to a private address in between. Redirects to private hosts
+  are refused too.
+- The pinning and redirect checks run in the plugin's own subclass of the package's request action. If you set your
+  own `actions.send_uptime_check_request` in `config/uptime-monitor.php`, your action is used as it is, so the
+  pre-check lookup still applies, but pinning and redirect refusal are up to your action. Pinning needs PHP's curl
+  extension, which Guzzle uses by default.
+- The certificate check opens its own TLS connection to port 443 of the host (the package's code). It only reads the
+  certificate, and it is not pinned.
 
 If you do monitor internal services, allow them:
 

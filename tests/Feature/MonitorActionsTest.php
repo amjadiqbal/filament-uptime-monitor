@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AmjadIqbal\FilamentUptimeMonitor\Resources\MonitorResource\Pages\EditMonitor;
 use AmjadIqbal\FilamentUptimeMonitor\Resources\MonitorResource\Pages\ListMonitors;
+use AmjadIqbal\FilamentUptimeMonitor\Support\HostGuard;
 use AmjadIqbal\FilamentUptimeMonitor\Tests\Fixtures\CustomMonitor;
 use AmjadIqbal\FilamentUptimeMonitor\Tests\Fixtures\FakeUptimeRequestAction;
 use AmjadIqbal\FilamentUptimeMonitor\UptimeMonitor;
@@ -11,6 +12,7 @@ use AmjadIqbal\FilamentUptimeMonitor\UptimeMonitorPlugin;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Event;
+use Spatie\UptimeMonitor\Actions\SendUptimeCheckRequestAction;
 use Spatie\UptimeMonitor\Events\UptimeCheckFailed;
 use Spatie\UptimeMonitor\Models\Enums\CertificateStatus;
 use Spatie\UptimeMonitor\Models\Enums\UptimeStatus;
@@ -177,4 +179,14 @@ it('keeps the result and checks the rest when a notification channel fails', fun
         ->callTableAction('checkMonitor', $this->broken)
         ->assertNotified(Notification::make()->danger()->title('http://api.example.com is down')
             ->body("cURL error 7: Failed to connect\nThe result was saved, but something after the check failed (often a notification channel): Slack webhook failed"));
+});
+
+it('marks a monitor whose host stopped resolving as down when checked with the guarded action', function (): void {
+    config(['uptime-monitor.actions.send_uptime_check_request' => SendUptimeCheckRequestAction::class]);
+    HostGuard::resolveUsing(fn (): array => []);
+    $this->site->forceFill(['certificate_check_enabled' => false])->save();
+
+    livewire(ListMonitors::class)
+        ->callTableAction('checkMonitor', $this->site)
+        ->assertNotified(Notification::make()->danger()->title('https://shop.example.com is down')->body('Could not resolve host: shop.example.com'));
 });

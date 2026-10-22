@@ -35,9 +35,9 @@ class MonitorStatusOverview extends StatsOverviewWidget
         $t = fn (string $key, array $replace = []): string => __("filament-uptime-monitor::uptime-monitor.widget.{$key}", $replace);
 
         $lastCheck = $s['last_check'];
-        // The package re-checks a healthy site every run_interval_in_minutes; no check in three intervals means the
-        // scheduler is probably not running.
-        $staleAfter = max(1, (int) config('uptime-monitor.uptime_check.run_interval_in_minutes', 5)) * 3;
+        // The monitor with the shortest interval is checked at least that often while the scheduler runs; no check in
+        // three of those intervals means the scheduler is probably not running.
+        $staleAfter = UptimeMonitor::shortestInterval() * 3;
         $stale = $lastCheck && $s['enabled'] > 0 && $lastCheck->lt(now()->subMinutes($staleAfter));
 
         return [

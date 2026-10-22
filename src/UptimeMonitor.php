@@ -346,6 +346,20 @@ class UptimeMonitor
     }
 
     /**
+     * The shortest check interval, in minutes, among monitors with uptime checks on (the package's default interval
+     * when there are none).
+     */
+    public static function shortestInterval(): int
+    {
+        $shortest = static::query()->where('uptime_check_enabled', true)->pluck('uptime_check_interval_in_minutes')
+            ->map(fn (mixed $minutes): int => (int) $minutes)
+            ->filter(fn (int $minutes): bool => $minutes > 0)
+            ->min();
+
+        return max(1, (int) ($shortest ?? config('uptime-monitor.uptime_check.run_interval_in_minutes', 5)));
+    }
+
+    /**
      * @return array{total: int, enabled: int, up: int, down: int, unchecked: int, disabled: int, certificate_problems: int, last_check: ?Carbon}
      */
     public static function summary(): array

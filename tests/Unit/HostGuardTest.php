@@ -5,6 +5,7 @@ declare(strict_types=1);
 use AmjadIqbal\FilamentUptimeMonitor\Support\GuardedUptimeCheckRequestAction;
 use AmjadIqbal\FilamentUptimeMonitor\Support\HostGuard;
 use AmjadIqbal\FilamentUptimeMonitor\Tests\Fixtures\CustomMonitor;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -63,3 +64,56 @@ it('keeps redirects off when the package config turns them off', function (): vo
 
     expect($action->options(new CustomMonitor(['url' => 'https://example.com'])))->not->toHaveKey('allow_redirects');
 });
+
+function guardedAction(): GuardedUptimeCheckRequestAction
+{
+    return new class extends GuardedUptimeCheckRequestAction
+    {
+        /** @return array<string, mixed> */
+        public function options(CustomMonitor $monitor): array
+        {
+            return $this->requestOptions($monitor);
+        }
+
+        /** @param array<int, string> $addresses */
+        public function resolvedTo(array $addresses): static
+        {
+            $this->addresses = $addresses;
+
+            return $this;
+        }
+    };
+}
+
+it('pins the request to the address it checked', function (string $url, string $resolve): void {
+    config(['uptime-monitor.uptime_check.guzzle_options.curl' => [CURLOPT_TCP_KEEPALIVE => 1]]);
+
+    $options = guardedAction()->resolvedTo(['2606:2800::1', '93.184.215.14'])->options(new CustomMonitor(['url' => $url]));
+
+    expect($options['curl'][CURLOPT_RESOLVE])->toBe([$resolve])
+        ->and($options['curl'][CURLOPT_TCP_KEEPALIVE])->toBe(1);
+})->with([
+    'https default port' => ['https://example.com/health', 'example.com:443:93.184.215.14'],
+    'http default port' => ['http://example.com', 'example.com:80:93.184.215.14'],
+    'explicit port' => ['https://example.com:8443', 'example.com:8443:93.184.215.14'],
+]);
+
+it('pins an IPv6-only host with brackets', function (): void {
+    $options = guardedAction()->resolvedTo(['2606:2800::1'])->options(new CustomMonitor(['url' => 'https://example.com']));
+
+    expect($options['curl'][CURLOPT_RESOLVE])->toBe(['example.com:443:[2606:2800::1]']);
+});
+
+it('refuses a host that does not resolve or resolves to a private address at check time', function (string $host, string $reason): void {
+    HostGuard::resolveUsing(fn (string $h): array => match ($h) {
+        'gone.example.com' => [],
+        default => ['10.0.0.9'],
+    });
+
+    $promise = guardedAction()->execute(new CustomMonitor(['url' => "https://{$host}", 'uptime_check_method' => 'get']));
+
+    expect(fn () => $promise->wait())->toThrow(ConnectException::class, $reason);
+})->with([
+    'unresolvable' => ['gone.example.com', 'Could not resolve host: gone.example.com'],
+    'rebound to private' => ['rebind.example.com', 'resolves to a private address'],
+]);

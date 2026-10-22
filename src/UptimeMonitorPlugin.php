@@ -173,7 +173,7 @@ class UptimeMonitorPlugin implements Plugin
     }
 
     /**
-     * Show the number of monitors with a problem (down, or certificate invalid) next to the navigation item.
+     * Show the number of monitors that need attention (down, or certificate invalid or expiring soon) next to the navigation item.
      */
     public function navigationBadge(bool $condition = true): static
     {

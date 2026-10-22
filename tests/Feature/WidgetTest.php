@@ -49,3 +49,13 @@ it('can be left off the dashboard', function (): void {
 
     expect($plugin->hasDashboardWidget())->toBeFalse();
 });
+
+it('judges the scheduler by the shortest interval of the monitors that are on', function (): void {
+    $this->makeMonitor('https://a.example.com', ['uptime_status' => 'up', 'uptime_check_interval_in_minutes' => 60, 'uptime_last_check_date' => now()->subMinutes(100)]);
+
+    livewire(MonitorStatusOverview::class)->assertDontSee('Is the scheduler running?');
+
+    $this->makeMonitor('https://b.example.com', ['uptime_status' => 'up', 'uptime_check_interval_in_minutes' => 5, 'uptime_last_check_date' => now()->subMinutes(100)]);
+
+    livewire(MonitorStatusOverview::class)->assertSee('Is the scheduler running?');
+});
