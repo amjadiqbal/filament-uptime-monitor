@@ -1,0 +1,51 @@
+<svg width="1200" height="300" viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#0B2A22"/>
+    </linearGradient>
+    <linearGradient id="iconbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B3B2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <g transform="translate(60,75) scale(0.29297)">
+    <rect width="512" height="512" rx="112" fill="url(#iconbg)"/>
+    <circle cx="240" cy="240" r="150" fill="none" stroke="#1E3A5F" stroke-width="22"/>
+    <path d="M240 90 A150 150 0 1 1 103 300" fill="none" stroke="#34D399" stroke-width="22" stroke-linecap="round"/>
+    <polyline points="92,246 170,246 202,180 246,318 284,206 310,246 388,246" fill="none" stroke="#F8FAFC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="392" cy="392" r="78" fill="#059669" stroke="#0F172A" stroke-width="14"/>
+    <path d="M366 384 v-16 a26 26 0 0 1 52 0 v16" fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <rect x="352" y="380" width="80" height="58" rx="12" fill="#FFFFFF"/>
+    <circle cx="392" cy="405" r="8" fill="#059669"/>
+    <rect x="388" y="408" width="8" height="16" rx="3" fill="#059669"/>
+</g>
+  <text x="235" y="148" font-family="Helvetica, Arial, sans-serif" font-size="64" font-weight="700" fill="#F8FAFC">Uptime Monitor</text>
+  <text x="238" y="190" font-family="Helvetica, Arial, sans-serif" font-size="23" font-weight="500" fill="#6EE7B7" letter-spacing="0.3">Watch your sites and certificates from Filament</text>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#CBD5E1" text-anchor="middle">
+<g transform="translate(238,218)"><rect width="236" height="32" rx="16.0" fill="#111C33" stroke="#273449"/><text x="118.0" y="21.12">add · enable · check now</text></g>
+<g transform="translate(484,218)"><rect width="194" height="32" rx="16.0" fill="#111C33" stroke="#273449"/><text x="97.0" y="21.12">uptime + SSL status</text></g>
+<g transform="translate(688,218)"><rect width="152" height="32" rx="16.0" fill="#111C33" stroke="#273449"/><text x="76.0" y="21.12">Filament 4 · 5</text></g>
+  </g>
+  <g transform="translate(905,34) scale(0.88)" font-family="Helvetica, Arial, sans-serif">
+    <rect width="300" height="184" rx="16" fill="#111C33" stroke="#273449" stroke-width="1.5"/>
+    <text x="18" y="30" font-size="12" font-weight="700" fill="#94A3B8" letter-spacing="0.6">MONITORS</text>
+    <line x1="0" y1="46" x2="300" y2="46" stroke="#273449"/>
+    <circle cx="26" cy="68" r="6" fill="#34D399"/>
+    <text x="42" y="65" font-size="13" font-weight="700" fill="#F8FAFC">shop.example.com</text>
+    <text x="42" y="81" font-size="11" font-weight="600" fill="#34D399">Up · 12 days</text>
+    <text x="282" y="73" font-size="11" fill="#94A3B8" text-anchor="end">SSL valid</text>
+    <line x1="0" y1="90" x2="300" y2="90" stroke="#273449"/>
+    <circle cx="26" cy="112" r="6" fill="#FB7185"/>
+    <text x="42" y="109" font-size="13" font-weight="700" fill="#F8FAFC">api.example.com</text>
+    <text x="42" y="125" font-size="11" font-weight="600" fill="#FB7185">Down · 4 min</text>
+    <text x="282" y="117" font-size="11" fill="#94A3B8" text-anchor="end">SSL valid</text>
+    <line x1="0" y1="134" x2="300" y2="134" stroke="#273449"/>
+    <circle cx="26" cy="156" r="6" fill="#34D399"/>
+    <text x="42" y="153" font-size="13" font-weight="700" fill="#F8FAFC">blog.example.com</text>
+    <text x="42" y="169" font-size="11" font-weight="600" fill="#34D399">Up · 3 hours</text>
+    <text x="282" y="161" font-size="11" fill="#FB7185" text-anchor="end">SSL 9 days left</text>
+  </g>
+  <text x="1170" y="284" text-anchor="end" font-family="Helvetica, Arial, sans-serif" font-size="15" fill="#64748B">amjadiqbal/filament-uptime-monitor</text>
+</svg>

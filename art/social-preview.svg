@@ -1,0 +1,32 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#0B2A22"/>
+    </linearGradient>
+    <linearGradient id="iconbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B3B2E"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <g transform="translate(490,50) scale(0.5859)">
+    <rect width="512" height="512" rx="112" fill="url(#iconbg)"/>
+    <circle cx="240" cy="240" r="150" fill="none" stroke="#1E3A5F" stroke-width="22"/>
+    <path d="M240 90 A150 150 0 1 1 103 300" fill="none" stroke="#34D399" stroke-width="22" stroke-linecap="round"/>
+    <polyline points="92,246 170,246 202,180 246,318 284,206 310,246 388,246" fill="none" stroke="#F8FAFC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="392" cy="392" r="78" fill="#059669" stroke="#0F172A" stroke-width="14"/>
+    <path d="M366 384 v-16 a26 26 0 0 1 52 0 v16" fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <rect x="352" y="380" width="80" height="58" rx="12" fill="#FFFFFF"/>
+    <circle cx="392" cy="405" r="8" fill="#059669"/>
+    <rect x="388" y="408" width="8" height="16" rx="3" fill="#059669"/>
+</g>
+  <text x="640" y="430" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="76" font-weight="700" fill="#F8FAFC">Uptime Monitor</text>
+  <text x="640" y="482" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="500" fill="#6EE7B7">Manage spatie/laravel-uptime-monitor from your Filament panel</text>
+  <g font-family="Helvetica, Arial, sans-serif" font-size="18" font-weight="600" fill="#CBD5E1" text-anchor="middle">
+<g transform="translate(288,530)"><rect width="276" height="40" rx="20.0" fill="#111C33" stroke="#273449"/><text x="138.0" y="26.40">add · enable · check now</text></g>
+<g transform="translate(578,530)"><rect width="226" height="40" rx="20.0" fill="#111C33" stroke="#273449"/><text x="113.0" y="26.40">uptime + SSL status</text></g>
+<g transform="translate(818,530)"><rect width="175" height="40" rx="20.0" fill="#111C33" stroke="#273449"/><text x="87.5" y="26.40">Filament 4 · 5</text></g>
+  </g>
+  <text x="1240" y="610" text-anchor="end" font-family="Helvetica, Arial, sans-serif" font-size="18" fill="#64748B">amjadiqbal/filament-uptime-monitor</text>
+</svg>

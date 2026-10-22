@@ -1,0 +1,23 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#0B2A22"/>
+    </linearGradient>
+    <linearGradient id="iconbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#0B3B2E"/>
+    </linearGradient>
+  </defs>
+<g>
+    <rect width="512" height="512" rx="112" fill="url(#iconbg)"/>
+    <circle cx="240" cy="240" r="150" fill="none" stroke="#1E3A5F" stroke-width="22"/>
+    <path d="M240 90 A150 150 0 1 1 103 300" fill="none" stroke="#34D399" stroke-width="22" stroke-linecap="round"/>
+    <polyline points="92,246 170,246 202,180 246,318 284,206 310,246 388,246" fill="none" stroke="#F8FAFC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="392" cy="392" r="78" fill="#059669" stroke="#0F172A" stroke-width="14"/>
+    <path d="M366 384 v-16 a26 26 0 0 1 52 0 v16" fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round"/>
+    <rect x="352" y="380" width="80" height="58" rx="12" fill="#FFFFFF"/>
+    <circle cx="392" cy="405" r="8" fill="#059669"/>
+    <rect x="388" y="408" width="8" height="16" rx="3" fill="#059669"/>
+</g>
+</svg>
