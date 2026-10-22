@@ -34,8 +34,9 @@ adds the screen for it:
 - **Add and edit**: URL, uptime and certificate checks, interval, HTTP method, text to look for, request body and
   extra headers. Changing the URL resets the old status.
 - **Check now**: run the uptime and certificate checks for one monitor, or for a selection, with the package's own code
-  and config. You see the result straight away. Each user may check up to 30 monitors a minute (every monitor in a
-  bulk check counts), and a bulk check over 20 monitors is refused as a whole; both limits are configurable.
+  and config. You see the result straight away. Each user may check up to 30 monitors a minute: every monitor that is
+  on and that the user may check counts, including one that is then skipped for a private address. A bulk check over
+  20 selected monitors is refused as a whole. Both limits are configurable.
 - **Turn on and off**, one at a time or in bulk, using the package's `enable()` and `disable()`.
 - **Dashboard widget**: up, down, certificate problems, and the time of the last check, with a hint when the scheduler
   seems to have stopped.
@@ -54,7 +55,7 @@ change how the scheduled checks or notifications work.
 ## Installation
 
 > **Laravel 13: add `-W`.** A new Laravel 13 app ships Guzzle 8, but spatie/laravel-uptime-monitor needs Guzzle 7
-> (4.7.0 and 4.7.1, the versions this plugin supports, require `^7.4|^7.2`). A plain
+> (this plugin requires ^4.7; 4.7.0 and 4.7.1, the 4.7+ releases so far, require `^7.4|^7.2`). A plain
 > `composer require amjadiqbal/filament-uptime-monitor` stops with "guzzlehttp/guzzle ... is fixed to 8.3.0 (lock file
 > version)" and changes nothing. With `-W`, Composer moves Guzzle back to 7.16.0 (psr7 2.13.2,
 > promises 2.6.0), which Laravel 13 supports. Tested 2026-10-23 on a new Laravel 13.38.0 + Filament 5.10.3 app: the
@@ -127,7 +128,7 @@ What comes from the package's `config/uptime-monitor.php`:
 | Setting | Used for |
 |---|---|
 | `monitor_model` | The model the page lists and edits (your subclass works) |
-| `uptime_check.run_interval_in_minutes` | The default interval for a new monitor, and the "is the scheduler running?" hint |
+| `uptime_check.run_interval_in_minutes` | The default interval for a new monitor. The "is the scheduler running?" hint uses the shortest interval among monitors with uptime checks on, and this value only when there are none |
 | `certificate_check.fire_expiring_soon_event_if_certificate_expires_within_days` | When a certificate shows "Expires soon" |
 | `uptime_check.*`, `actions.send_uptime_check_request` | How "Check now" sends the request: timeout, headers, Guzzle options, user agent, your own request action |
 | `notifications.*` | Unchanged: "Check now" fires the package's events, so its notifications go out as usual. If a channel fails (for example the default `slack` channel with no working webhook), the check result is still saved and the panel shows the error |
@@ -165,9 +166,11 @@ services, the plugin refuses URLs on `localhost` or on private, loopback, link-l
 - **When a monitor is saved**, the host is looked up and refused if any of its addresses is private. A host that does
   not resolve yet is accepted, because its DNS may simply not be live.
 - **Right before a check started from the panel**, the host is looked up again. A private address is skipped, and a host
-  that does not resolve is marked down ("Could not resolve host"). The request is then pinned to the address that was
-  checked (curl's `CURLOPT_RESOLVE`), so DNS can't switch to a private address in between. Redirects to private hosts
-  are refused too.
+  that does not resolve is marked down ("Could not resolve host"). The request is then pinned to one of the checked
+  addresses (the first IPv4 one if there is one) with curl's `CURLOPT_RESOLVE`, so DNS can't switch to a private address
+  in between. Pinning is skipped for URLs with an IP address as host (nothing to resolve) and when `CURLOPT_RESOLVE`
+  isn't available. A redirect to another host is checked against the private list and refused if private, but the
+  redirected request is not pinned.
 - The pinning and redirect checks run in the plugin's own subclass of the package's request action. If you set your
   own `actions.send_uptime_check_request` in `config/uptime-monitor.php`, your action is used as it is, so the
   pre-check lookup still applies, but pinning and redirect refusal are up to your action. Pinning needs PHP's curl
