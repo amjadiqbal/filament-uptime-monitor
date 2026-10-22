@@ -4,6 +4,8 @@ All notable changes to `filament-uptime-monitor` are documented in this file, in
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-23
+
 ### Added
 
 - Monitors resource for spatie/laravel-uptime-monitor: list, add, edit and delete monitors, with uptime and certificate
@@ -15,4 +17,8 @@ All notable changes to `filament-uptime-monitor` are documented in this file, in
 - Navigation badge with the number of monitors that need attention.
 - Authorization through a policy on the monitor model or an `authorizeUsing()` closure, with a `checkNow` ability.
 - Private and local addresses are refused from the panel unless `allowPrivateHosts()` is set, including redirects.
-- Filament 4 and 5, Laravel 12 and 13, PHP 8.2 to 8.5.
+- "Check now" saves the result even when a notification channel fails, and shows the error.
+- Filament 4 and 5, Laravel 12 and 13, PHP 8.2 to 8.5 (Filament 5 and Laravel 13 from PHP 8.3).
+
+[Unreleased]: https://github.com/amjadiqbal/filament-uptime-monitor/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/amjadiqbal/filament-uptime-monitor/releases/tag/v1.0.0
