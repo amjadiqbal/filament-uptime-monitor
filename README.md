@@ -52,14 +52,19 @@ change how the scheduled checks or notifications work.
 
 ## Installation
 
+> **Laravel 13: add `-W`.** A new Laravel 13 app ships Guzzle 8, but spatie/laravel-uptime-monitor (4.7.1) needs
+> Guzzle 7. A plain `composer require amjadiqbal/filament-uptime-monitor` stops with "guzzlehttp/guzzle ... is fixed
+> to 8.3.0 (lock file version)" and changes nothing. With `-W`, Composer moves Guzzle back to 7.16.0 (psr7 2.13.2,
+> promises 2.6.0), which Laravel 13 supports. Tested 2026-10-23 on a new Laravel 13.38.0 + Filament 5.10.3 app: the
+> install succeeded, the app's own tests passed, and Laravel's HTTP client and the `monitor:*` commands worked.
+> There is no open upstream issue or PR for Guzzle 8 yet ([#383](https://github.com/spatie/laravel-uptime-monitor/pull/383),
+> which proposed moving the checks to Laravel's HTTP client, was closed without merging).
+
 ```bash
+# Laravel 12
 composer require amjadiqbal/filament-uptime-monitor
-```
 
-On Laravel 13, add `-W`. A new Laravel 13 app ships Guzzle 8, while spatie/laravel-uptime-monitor 4.7 needs Guzzle 7
-(which Laravel 13 also supports), so Composer has to move Guzzle back:
-
-```bash
+# Laravel 13
 composer require amjadiqbal/filament-uptime-monitor -W
 ```
 
