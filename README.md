@@ -56,6 +56,13 @@ change how the scheduled checks or notifications work.
 composer require amjadiqbal/filament-uptime-monitor
 ```
 
+On Laravel 13, add `-W`. A new Laravel 13 app ships Guzzle 8, while spatie/laravel-uptime-monitor 4.7 needs Guzzle 7
+(which Laravel 13 also supports), so Composer has to move Guzzle back:
+
+```bash
+composer require amjadiqbal/filament-uptime-monitor -W
+```
+
 If you haven't set up the uptime monitor package yet, publish its config and migration, then migrate:
 
 ```bash
