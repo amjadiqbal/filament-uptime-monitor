@@ -1,0 +1,36 @@
+<?php
+
+namespace Spatie\UptimeMonitor\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * The columns of the package's monitors table (create_monitors_table.php.stub) with their casts. Spatie's model does
+ * not document them, so PHPStan reads them from here. Dates (Carbon, cast by the model) and url (Spatie\Url\Url) are
+ * mixed because PHPStan validates stubs without vendor classes.
+ *
+ * @property int $id
+ * @property-read mixed $url
+ * @property-read string $raw_url
+ * @property bool $uptime_check_enabled
+ * @property string $look_for_string
+ * @property string|int $uptime_check_interval_in_minutes
+ * @property string $uptime_status
+ * @property string|null $uptime_check_failure_reason
+ * @property int $uptime_check_times_failed_in_a_row
+ * @property mixed $uptime_status_last_change_date
+ * @property mixed $uptime_last_check_date
+ * @property mixed $uptime_check_failed_event_fired_on_date
+ * @property string $uptime_check_method
+ * @property string|null $uptime_check_payload
+ * @property array<string, string> $uptime_check_additional_headers
+ * @property string|null $uptime_check_response_checker
+ * @property bool $certificate_check_enabled
+ * @property string $certificate_status
+ * @property mixed $certificate_expiration_date
+ * @property string|null $certificate_issuer
+ * @property string $certificate_check_failure_reason
+ */
+class Monitor extends Model
+{
+}
