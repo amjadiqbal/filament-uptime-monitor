@@ -34,13 +34,16 @@ class CheckMonitorAction extends Action
                     return;
                 }
 
-                ['checked' => $checked] = UptimeMonitor::check([$record]);
+                ['checked' => $checked, 'errors' => $errors] = UptimeMonitor::check([$record]);
 
-                static::notify($record, $checked->first());
+                static::notify($record, $checked->first(), $errors);
             });
     }
 
-    public static function notify(Monitor $record, ?Monitor $checked): void
+    /**
+     * @param  array<int, string>  $errors
+     */
+    public static function notify(Monitor $record, ?Monitor $checked, array $errors = []): void
     {
         $url = $record->raw_url;
 
@@ -78,6 +81,11 @@ class CheckMonitorAction extends Action
                     'date' => $checked->certificate_expiration_date->toFormattedDateString(),
                 ]);
             }
+        }
+
+        foreach ($errors as $error) {
+            $failing = true;
+            $lines[] = __('filament-uptime-monitor::uptime-monitor.actions.check.error', ['message' => str($error)->limit(200)->toString()]);
         }
 
         Notification::make()

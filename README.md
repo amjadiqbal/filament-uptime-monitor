@@ -123,7 +123,7 @@ What comes from the package's `config/uptime-monitor.php`:
 | `uptime_check.run_interval_in_minutes` | The default interval for a new monitor, and the "is the scheduler running?" hint |
 | `certificate_check.fire_expiring_soon_event_if_certificate_expires_within_days` | When a certificate shows "Expires soon" |
 | `uptime_check.*`, `actions.send_uptime_check_request` | How "Check now" sends the request: timeout, headers, Guzzle options, user agent, your own request action |
-| `notifications.*` | Unchanged: "Check now" fires the package's events, so its notifications go out as usual |
+| `notifications.*` | Unchanged: "Check now" fires the package's events, so its notifications go out as usual. If a channel fails (for example the default `slack` channel with no working webhook), the check result is still saved and the panel shows the error |
 
 ## Permissions
 

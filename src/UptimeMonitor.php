@@ -281,8 +281,12 @@ class UptimeMonitor
      * Run the uptime and certificate checks for these monitors now, with the package's own code and config. Monitors
      * whose host is not allowed (see allowPrivateHosts) are skipped and returned as such.
      *
+     * Each monitor is checked on its own: the package saves the result before it fires its events, so a failing
+     * notification channel (e.g. a misconfigured Slack webhook) is reported and returned as an error instead of
+     * aborting the remaining checks.
+     *
      * @param  iterable<Monitor>  $monitors
-     * @return array{checked: Collection<int, Monitor>, blocked: Collection<int, Monitor>}
+     * @return array{checked: Collection<int, Monitor>, blocked: Collection<int, Monitor>, errors: array<int, string>}
      */
     public static function check(iterable $monitors): array
     {
@@ -290,19 +294,30 @@ class UptimeMonitor
 
         [$allowed, $blocked] = $monitors->partition(fn (Monitor $monitor): bool => static::urlProblem($monitor->raw_url) === null);
 
-        $uptime = $allowed->filter(fn (Monitor $monitor): bool => (bool) $monitor->uptime_check_enabled)->values();
+        $errors = [];
+        $attempt = function (callable $callback) use (&$errors): void {
+            try {
+                $callback();
+            } catch (Throwable $exception) {
+                report($exception);
+                $errors[] = $exception->getMessage();
+            }
+        };
 
-        if ($uptime->isNotEmpty()) {
-            static::withGuardedRequests(fn () => MonitorCollection::make($uptime->all())->checkUptime());
+        foreach ($allowed as $monitor) {
+            if ($monitor->uptime_check_enabled) {
+                $attempt(fn () => static::withGuardedRequests(fn () => MonitorCollection::make([$monitor])->checkUptime()));
+            }
+
+            if ($monitor->certificate_check_enabled) {
+                $attempt(fn () => $monitor->checkCertificate());
+            }
         }
-
-        $allowed
-            ->filter(fn (Monitor $monitor): bool => (bool) $monitor->certificate_check_enabled)
-            ->each(fn (Monitor $monitor) => $monitor->checkCertificate());
 
         return [
             'checked' => $allowed->map(fn (Monitor $monitor): Monitor => $monitor->refresh())->values(),
             'blocked' => $blocked->values(),
+            'errors' => array_values(array_unique($errors)),
         ];
     }
 

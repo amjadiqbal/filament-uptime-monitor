@@ -46,7 +46,7 @@ class CheckMonitorsBulkAction extends BulkAction
                     return;
                 }
 
-                ['checked' => $checked, 'blocked' => $blocked] = UptimeMonitor::check($enabled);
+                ['checked' => $checked, 'blocked' => $blocked, 'errors' => $errors] = UptimeMonitor::check($enabled);
 
                 $down = $checked->filter(fn (Monitor $monitor): bool => UptimeMonitor::uptimeState($monitor) === UptimeMonitor::UPTIME_DOWN
                     || UptimeMonitor::certificateState($monitor) === UptimeMonitor::CERTIFICATE_INVALID)->count();
@@ -57,10 +57,11 @@ class CheckMonitorsBulkAction extends BulkAction
                     $blocked->count() ? trans_choice('filament-uptime-monitor::uptime-monitor.actions.check.blocked', $blocked->count(), ['count' => $blocked->count()]) : null,
                     $off->count() ? trans_choice('filament-uptime-monitor::uptime-monitor.actions.check.disabled', $off->count(), ['count' => $off->count()]) : null,
                     $denied->count() ? trans_choice('filament-uptime-monitor::uptime-monitor.actions.check.skipped', $denied->count(), ['count' => $denied->count()]) : null,
+                    ...array_map(fn (string $error): string => __('filament-uptime-monitor::uptime-monitor.actions.check.error', ['message' => str($error)->limit(200)->toString()]), $errors),
                 ])->filter()->implode(' ');
 
                 Notification::make()
-                    ->status($down || $blocked->count() || $denied->count() ? 'danger' : 'success')
+                    ->status($down || $blocked->count() || $denied->count() || $errors ? 'danger' : 'success')
                     ->title(trans_choice('filament-uptime-monitor::uptime-monitor.actions.check.checked', $checked->count(), ['count' => $checked->count()]))
                     ->body($body)
                     ->send();

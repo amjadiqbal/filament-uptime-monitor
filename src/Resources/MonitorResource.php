@@ -252,6 +252,11 @@ class MonitorResource extends Resource
                         UptimeMonitor::UPTIME_DOWN => 'danger',
                         default => 'gray',
                     })
+                    ->iconColor(fn (string $state): string => match ($state) {
+                        UptimeMonitor::UPTIME_UP => 'success',
+                        UptimeMonitor::UPTIME_DOWN => 'danger',
+                        default => 'gray',
+                    })
                     ->description(fn (Monitor $record): ?string => in_array(UptimeMonitor::uptimeState($record), [UptimeMonitor::UPTIME_UP, UptimeMonitor::UPTIME_DOWN], true)
                         && $record->uptime_status_last_change_date
                             ? $t('columns.since', ['time' => $record->uptime_status_last_change_date->diffForHumans()])
@@ -271,6 +276,11 @@ class MonitorResource extends Resource
                         default => Heroicon::OutlinedClock,
                     })
                     ->color(fn (string $state): string => match ($state) {
+                        UptimeMonitor::CERTIFICATE_VALID => 'success',
+                        UptimeMonitor::CERTIFICATE_EXPIRING, UptimeMonitor::CERTIFICATE_INVALID => 'danger',
+                        default => 'gray',
+                    })
+                    ->iconColor(fn (string $state): string => match ($state) {
                         UptimeMonitor::CERTIFICATE_VALID => 'success',
                         UptimeMonitor::CERTIFICATE_EXPIRING, UptimeMonitor::CERTIFICATE_INVALID => 'danger',
                         default => 'gray',

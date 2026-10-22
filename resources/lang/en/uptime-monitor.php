@@ -94,6 +94,7 @@ return [
             'too_many' => 'Select at most :max monitors to check at once.',
             'rate_limited' => 'Too many checks. Try again in a minute.',
             'skipped' => '{1} 1 monitor was skipped: you may not check it.|[2,*] :count monitors were skipped: you may not check them.',
+            'error' => 'The result was saved, but something after the check failed (often a notification channel): :message',
         ],
         'enable' => [
             'label' => 'Turn on',

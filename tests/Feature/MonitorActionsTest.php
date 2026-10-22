@@ -10,6 +10,8 @@ use AmjadIqbal\FilamentUptimeMonitor\UptimeMonitor;
 use AmjadIqbal\FilamentUptimeMonitor\UptimeMonitorPlugin;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Event;
+use Spatie\UptimeMonitor\Events\UptimeCheckFailed;
 use Spatie\UptimeMonitor\Models\Enums\CertificateStatus;
 use Spatie\UptimeMonitor\Models\Enums\UptimeStatus;
 
@@ -47,6 +49,9 @@ it('checks uptime and the certificate now, with the package code', function (): 
 });
 
 it('reports a failing check with its reason', function (): void {
+    // The package fires the event once, when failures reach the threshold: start the count again.
+    $this->broken->fresh()->forceFill(['uptime_check_times_failed_in_a_row' => 0, 'uptime_check_failed_event_fired_on_date' => null])->save();
+
     livewire(ListMonitors::class)
         ->callTableAction('checkMonitor', $this->broken)
         ->assertNotified(Notification::make()->danger()->title('http://api.example.com is down')->body('cURL error 7: Failed to connect'));
@@ -151,4 +156,25 @@ it('respects a custom request action from the package config', function (): void
 
     expect(config('uptime-monitor.actions.send_uptime_check_request'))->toBe(FakeUptimeRequestAction::class)
         ->and(FakeUptimeRequestAction::$requested)->toHaveCount(1);
+});
+
+it('keeps the result and checks the rest when a notification channel fails', function (): void {
+    config(['uptime-monitor.uptime_check.fire_monitor_failed_event_after_consecutive_failures' => 1]);
+    Event::listen(UptimeCheckFailed::class, fn () => throw new RuntimeException('Slack webhook failed'));
+
+    livewire(ListMonitors::class)
+        ->callTableBulkAction('checkMonitors', [$this->broken, $this->site])
+        ->assertNotified();
+
+    expect($this->broken->fresh()->uptime_status)->toBe(UptimeStatus::DOWN)
+        ->and($this->site->fresh()->uptime_status)->toBe(UptimeStatus::UP)
+        ->and(FakeUptimeRequestAction::$requested)->toBe(['http://api.example.com', 'https://shop.example.com']);
+
+    // The package fires the event once, when failures reach the threshold: start the count again.
+    $this->broken->fresh()->forceFill(['uptime_check_times_failed_in_a_row' => 0, 'uptime_check_failed_event_fired_on_date' => null])->save();
+
+    livewire(ListMonitors::class)
+        ->callTableAction('checkMonitor', $this->broken)
+        ->assertNotified(Notification::make()->danger()->title('http://api.example.com is down')
+            ->body("cURL error 7: Failed to connect\nThe result was saved, but something after the check failed (often a notification channel): Slack webhook failed"));
 });
