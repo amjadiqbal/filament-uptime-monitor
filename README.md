@@ -45,7 +45,7 @@ change how the scheduled checks or notifications work.
 
 ## Requirements
 
-- PHP 8.2+
+- PHP 8.2+ (with Filament 5, tested on PHP 8.3+)
 - Laravel 12 or 13
 - Filament 4 or 5
 - spatie/laravel-uptime-monitor 4.6+
@@ -183,7 +183,7 @@ php artisan vendor:publish --tag=filament-uptime-monitor-translations
 composer test
 ```
 
-The full matrix (PHP 8.2-8.5, Laravel 12 and 13, Filament 4 and 5) runs locally with `scripts/ci-local.sh`.
+The full matrix (PHP 8.2-8.5, Laravel 12 and 13, Filament 4 and 5; Filament 5 and Laravel 13 from PHP 8.3) runs locally with `scripts/ci-local.sh`.
 
 ## Changelog
 

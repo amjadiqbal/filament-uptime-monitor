@@ -3,7 +3,7 @@
 # commit or PR. For each PHP version (default 8.2 8.3 8.4 8.5) x Laravel major (default 12 13) x Filament major (default
 # 4 5), in a throwaway clone of HEAD: composer.json narrowed to that Filament major and the Testbench that matches the
 # Laravel major (^10 for 12, ^11 for 13), composer update, then Pint (once), PHPStan and Pest. PHP 8.2 x Laravel 13 is
-# skipped: Laravel 13 needs PHP 8.3.
+# skipped: Laravel 13 needs PHP 8.3. PHP 8.2 x Filament 5 is skipped too: pest-plugin-livewire 4 (for Livewire 4) needs PHP 8.3.
 #   scripts/ci-local.sh
 #   PHP_VERSIONS=8.5 LARAVEL_VERSIONS=13 FILAMENT_VERSIONS=5 scripts/ci-local.sh
 # Finds php8.x on PATH, or Homebrew's php@8.x. Tests committed code (HEAD) only.
@@ -43,6 +43,7 @@ for v in $PHP_VERSIONS; do
       TAG="PHP $v Laravel $l Filament $f"
       # Laravel 13 needs PHP 8.3.
       if [ "$v" = "8.2" ] && [ "$l" = "13" ]; then RESULTS+=("skip  $TAG (Laravel 13 needs PHP 8.3)"); continue; fi
+      if [ "$v" = "8.2" ] && [ "$f" = "5" ]; then RESULTS+=("skip  $TAG (pest-plugin-livewire 4 needs PHP 8.3)"); continue; fi
       DIR="$WORK/l$l-f$f-php$v"
       if [ "$l" = "13" ]; then TB='^11.0'; else TB='^10.0'; fi
       git clone --quiet --no-hardlinks "$REPO" "$DIR" && git -C "$DIR" checkout --quiet --detach "$(git rev-parse HEAD)"

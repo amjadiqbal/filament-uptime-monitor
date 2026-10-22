@@ -9,3 +9,11 @@ parameters:
     stubFiles:
         - stubs/Monitor.stub
     tmpDir: build/phpstan
+    ignoreErrors:
+        # Running on PHP 8.2-8.4, PHPStan's filter_var() signature ignores FILTER_FLAG_GLOBAL_RANGE and assumes any
+        # valid IP passes, so it calls the false branch dead. It is not: 127.0.0.1 returns false (tests/Unit/HostGuardTest).
+        -
+            identifier: identical.alwaysFalse
+            path: src/Support/HostGuard.php
+            count: 1
+            reportUnmatched: false
